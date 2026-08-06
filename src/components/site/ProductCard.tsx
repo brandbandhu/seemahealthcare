@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { Heart, Plus, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,12 +13,7 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <article className="group card-soft flex flex-col overflow-hidden transition-shadow hover:shadow-[var(--shadow-card)]">
       <div className="relative">
-        <Link
-          to="/products/$slug"
-          params={{ slug: product.slug }}
-          className="block bg-muted/50"
-          aria-label={product.name}
-        >
+        <Link to={`/products/${product.slug}`} className="block bg-muted/50" aria-label={product.name}>
           <img
             src={product.image}
             alt={`${product.name} pack illustration`}
@@ -44,11 +39,7 @@ export function ProductCard({ product }: { product: Product }) {
 
       <div className="flex flex-1 flex-col gap-1.5 p-3 sm:p-4">
         <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{product.brand}</p>
-        <Link
-          to="/products/$slug"
-          params={{ slug: product.slug }}
-          className="line-clamp-2 text-sm font-semibold leading-snug hover:text-primary"
-        >
+        <Link to={`/products/${product.slug}`} className="line-clamp-2 text-sm font-semibold leading-snug hover:text-primary">
           {product.name}
         </Link>
         <p className="line-clamp-1 text-xs text-muted-foreground">{product.composition}</p>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { AlertTriangle, Heart, Minus, Plus, ShieldCheck, Star, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -18,36 +18,18 @@ import { ProductCard } from "@/components/site/ProductCard";
 import { categoryBySlug, productBySlug, products } from "@/data/catalog";
 import { inr, useStore } from "@/context/StoreContext";
 
-export const Route = createFileRoute("/products/$slug")({
-  loader: ({ params }) => {
-    const product = productBySlug(params.slug);
-    if (!product) throw notFound();
-    return { product };
-  },
-  head: ({ loaderData }) => {
-    if (!loaderData) {
-      return { meta: [{ title: "Product unavailable — Seema Healthcare" }, { name: "robots", content: "noindex" }] };
-    }
-    const p = loaderData.product;
-    return {
-      meta: [
-        { title: `${p.name} — ${p.packSize} | Seema Healthcare` },
-        { name: "description", content: `${p.name} (${p.composition}), ${p.packSize} by ${p.brand}. Order online with pharmacist verification and doorstep delivery.` },
-        { property: "og:title", content: `${p.name} — Seema Healthcare` },
-        { property: "og:description", content: `${p.composition} · ${p.packSize} · ${p.brand}` },
-      ],
-    };
-  },
-  component: ProductDetail,
-});
-
-function ProductDetail() {
-  const { product } = Route.useLoaderData();
+export default function ProductDetailPage() {
+  const { slug } = useParams();
+  const product = slug ? productBySlug(slug) : undefined;
   const { addToCart, toggleWishlist, wishlist } = useStore();
   const navigate = useNavigate();
   const [qty, setQty] = useState(1);
   const [pin, setPin] = useState("");
   const [eta, setEta] = useState<string | null>(null);
+
+  if (!product) {
+    return <Navigate to="/products" replace />;
+  }
 
   const off = Math.round(((product.mrp - product.price) / product.mrp) * 100);
   const cat = categoryBySlug(product.category);
@@ -58,11 +40,21 @@ function ProductDetail() {
     <div className="mx-auto max-w-7xl px-4 py-6">
       <Breadcrumb>
         <BreadcrumbList>
-          <BreadcrumbItem><BreadcrumbLink asChild><Link to="/">Home</Link></BreadcrumbLink></BreadcrumbItem>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link to="/">Home</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
           <BreadcrumbSeparator />
-          <BreadcrumbItem><BreadcrumbLink asChild><Link to="/products">Products</Link></BreadcrumbLink></BreadcrumbItem>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link to="/products">Products</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
           <BreadcrumbSeparator />
-          <BreadcrumbItem><BreadcrumbPage>{product.name}</BreadcrumbPage></BreadcrumbItem>
+          <BreadcrumbItem>
+            <BreadcrumbPage>{product.name}</BreadcrumbPage>
+          </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
 
@@ -98,10 +90,10 @@ function ProductDetail() {
           </div>
           <h1 className="mt-3 text-2xl font-extrabold sm:text-3xl">{product.name}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {product.composition} · {product.packSize}
+            {product.composition} - {product.packSize}
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            {product.brand} · Marketed by {product.manufacturer}
+            {product.brand} - Marketed by {product.manufacturer}
           </p>
 
           <div className="mt-2 flex items-center gap-1 text-sm">
@@ -135,7 +127,7 @@ function ProductDetail() {
               disabled={!product.stock}
               onClick={() => {
                 addToCart(product.slug, qty);
-                navigate({ to: "/cart" });
+                navigate("/cart");
               }}
             >
               Buy Now
@@ -145,7 +137,7 @@ function ProductDetail() {
             </Button>
           </div>
           <p className="mt-2 text-sm font-medium" style={{ color: product.stock ? "var(--success)" : "var(--destructive)" }}>
-            {product.stock ? `In stock — ${product.stock} units available` : "Currently out of stock"}
+            {product.stock ? `In stock - ${product.stock} units available` : "Currently out of stock"}
           </p>
 
           <form
@@ -156,15 +148,19 @@ function ProductDetail() {
                 toast.error("Enter a valid 6-digit PIN code");
                 return;
               }
-              setEta("Delivery by Tuesday, standard shipping · Express available");
+              setEta("Delivery by Tuesday, standard shipping - Express available");
               toast.success("Delivery available at " + pin);
             }}
           >
             <div className="min-w-0 flex-1">
-              <label htmlFor="pin" className="text-xs font-semibold">Check delivery</label>
+              <label htmlFor="pin" className="text-xs font-semibold">
+                Check delivery
+              </label>
               <Input id="pin" value={pin} onChange={(e) => setPin(e.target.value)} placeholder="6-digit PIN code" inputMode="numeric" />
             </div>
-            <Button type="submit" variant="outline">Check</Button>
+            <Button type="submit" variant="outline">
+              Check
+            </Button>
             {eta && (
               <p className="flex w-full items-center gap-2 text-sm text-success">
                 <Truck className="h-4 w-4" /> {eta}
@@ -190,14 +186,26 @@ function ProductDetail() {
       <Tabs defaultValue="description" className="mt-10">
         <TabsList className="flex h-auto flex-wrap justify-start">
           {["description", "uses", "directions", "safety", "storage", "manufacturer", "returns"].map((t) => (
-            <TabsTrigger key={t} value={t} className="capitalize">{t}</TabsTrigger>
+            <TabsTrigger key={t} value={t} className="capitalize">
+              {t}
+            </TabsTrigger>
           ))}
         </TabsList>
-        <TabsContent value="description" className="card-soft mt-3 p-5 text-sm text-muted-foreground">{product.description}</TabsContent>
-        <TabsContent value="uses" className="card-soft mt-3 p-5 text-sm text-muted-foreground">{product.uses}</TabsContent>
-        <TabsContent value="directions" className="card-soft mt-3 p-5 text-sm text-muted-foreground">{product.directions}</TabsContent>
-        <TabsContent value="safety" className="card-soft mt-3 p-5 text-sm text-muted-foreground">{product.safety}</TabsContent>
-        <TabsContent value="storage" className="card-soft mt-3 p-5 text-sm text-muted-foreground">{product.storage}</TabsContent>
+        <TabsContent value="description" className="card-soft mt-3 p-5 text-sm text-muted-foreground">
+          {product.description}
+        </TabsContent>
+        <TabsContent value="uses" className="card-soft mt-3 p-5 text-sm text-muted-foreground">
+          {product.uses}
+        </TabsContent>
+        <TabsContent value="directions" className="card-soft mt-3 p-5 text-sm text-muted-foreground">
+          {product.directions}
+        </TabsContent>
+        <TabsContent value="safety" className="card-soft mt-3 p-5 text-sm text-muted-foreground">
+          {product.safety}
+        </TabsContent>
+        <TabsContent value="storage" className="card-soft mt-3 p-5 text-sm text-muted-foreground">
+          {product.storage}
+        </TabsContent>
         <TabsContent value="manufacturer" className="card-soft mt-3 p-5 text-sm text-muted-foreground">
           {product.manufacturer}, India. Batch number and expiry date are printed on the pack and listed on your invoice.
         </TabsContent>
@@ -228,7 +236,9 @@ function Row({ title, items }: { title: string; items: typeof products }) {
     <section className="mt-10">
       <h2 className="mb-4 text-xl font-extrabold">{title}</h2>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        {items.map((p) => <ProductCard key={p.id} product={p} />)}
+        {items.map((p) => (
+          <ProductCard key={p.id} product={p} />
+        ))}
       </div>
     </section>
   );

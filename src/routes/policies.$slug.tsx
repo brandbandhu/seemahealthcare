@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { Navigate, useParams } from "react-router-dom";
 
 const policies: Record<string, { title: string; intro: string; points: string[] }> = {
   "privacy-policy": {
@@ -23,7 +23,7 @@ const policies: Record<string, { title: string; intro: string; points: string[] 
   },
   "shipping-policy": {
     title: "Shipping Policy",
-    intro: "Standard delivery is ₹49 and free above ₹499. Express delivery is available on selected PIN codes.",
+    intro: "Standard delivery is Rs. 49 and free above Rs. 499. Express delivery is available on selected PIN codes.",
     points: [
       "Orders placed before 4 pm are dispatched the same working day.",
       "Delivery windows are estimates and may vary with weather or courier delays.",
@@ -53,7 +53,7 @@ const policies: Record<string, { title: string; intro: string; points: string[] 
   },
   "reward-points-policy": {
     title: "Reward Points Policy",
-    intro: "1 point equals ₹1 and can be redeemed against a maximum of 10% of your cart value.",
+    intro: "1 point equals Rs. 1 and can be redeemed against a maximum of 10% of your cart value.",
     points: [
       "Points are credited after delivery is confirmed.",
       "Points are reversed on cancelled or refunded orders.",
@@ -93,35 +93,22 @@ const policies: Record<string, { title: string; intro: string; points: string[] 
   },
 };
 
-export const Route = createFileRoute("/policies/$slug")({
-  loader: ({ params }) => {
-    const policy = policies[params.slug];
-    if (!policy) throw notFound();
-    return { policy };
-  },
-  head: ({ loaderData }) => {
-    if (!loaderData) return { meta: [{ title: "Policy unavailable — Seema Healthcare" }, { name: "robots", content: "noindex" }] };
-    const p = loaderData.policy;
-    return {
-      meta: [
-        { title: `${p.title} — Seema Healthcare` },
-        { name: "description", content: p.intro },
-        { property: "og:title", content: `${p.title} — Seema Healthcare` },
-        { property: "og:description", content: p.intro },
-      ],
-    };
-  },
-  component: PolicyPage,
-});
+export default function PolicyPage() {
+  const { slug } = useParams();
+  const policy = slug ? policies[slug] : undefined;
 
-function PolicyPage() {
-  const { policy } = Route.useLoaderData();
+  if (!policy) {
+    return <Navigate to="/" replace />;
+  }
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <h1 className="text-2xl font-extrabold">{policy.title}</h1>
       <p className="mt-3 text-sm text-muted-foreground">{policy.intro}</p>
       <ul className="mt-5 list-disc space-y-2 pl-5 text-sm text-muted-foreground">
-        {policy.points.map((p: string) => <li key={p}>{p}</li>)}
+        {policy.points.map((p: string) => (
+          <li key={p}>{p}</li>
+        ))}
       </ul>
       <p className="mt-6 text-xs text-muted-foreground">
         Demonstration content. Replace with legally reviewed text before going live.

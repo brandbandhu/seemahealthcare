@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { NavLink } from "react-router-dom";
 import { Home, LayoutGrid, ShoppingCart, Upload, Gift } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 
@@ -17,11 +17,13 @@ export function MobileNav() {
       <ul className="mx-auto grid max-w-lg grid-cols-5">
         {items.map(({ to, label, icon: Icon }) => (
           <li key={to}>
-            <Link
+            <NavLink
               to={to}
-              activeOptions={{ exact: to === "/" }}
-              activeProps={{ className: "text-primary" }}
-              className="relative flex flex-col items-center gap-0.5 px-1 py-2 text-[10px] font-medium text-muted-foreground sm:text-[11px]"
+              className={({ isActive }) =>
+                `relative flex flex-col items-center gap-0.5 px-1 py-2 text-[10px] font-medium text-muted-foreground sm:text-[11px] ${
+                  isActive ? "text-primary" : ""
+                }`
+              }
             >
               <Icon className="h-5 w-5" />
               {label}
@@ -30,7 +32,7 @@ export function MobileNav() {
                   {totals.itemCount}
                 </span>
               )}
-            </Link>
+            </NavLink>
           </li>
         ))}
       </ul>

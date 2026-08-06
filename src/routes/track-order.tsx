@@ -1,22 +1,9 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { CheckCircle2, Circle, Phone, Truck } from "lucide-react";
+import { Phone, CheckCircle2, Circle, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supportPhone } from "@/data/catalog";
-
-export const Route = createFileRoute("/track-order")({
-  head: () => ({
-    meta: [
-      { title: "Track Your Order — Seema Healthcare" },
-      { name: "description", content: "Track your Seema Healthcare order through a ten-stage timeline from placement to doorstep delivery." },
-      { property: "og:title", content: "Track Your Order — Seema Healthcare" },
-      { property: "og:description", content: "Live delivery timeline, courier details and estimated delivery date." },
-    ],
-  }),
-  component: TrackOrder,
-});
 
 const timeline = [
   ["Order Placed", "06 Aug, 09:12 am"],
@@ -31,7 +18,7 @@ const timeline = [
   ["Delivered", "Expected 08 Aug"],
 ];
 
-function TrackOrder() {
+export default function TrackOrderPage() {
   const [id, setId] = useState("SH-ORD-20260806-0142");
   const done = 8;
 
@@ -66,7 +53,11 @@ function TrackOrder() {
       <ol className="card-soft mt-6 space-y-4 p-5">
         {timeline.map(([label, when], i) => (
           <li key={label} className="flex gap-3">
-            {i < done ? <CheckCircle2 className="h-5 w-5 shrink-0 text-success" /> : <Circle className="h-5 w-5 shrink-0 text-muted-foreground" />}
+            {i < done ? (
+              <CheckCircle2 className="h-5 w-5 shrink-0 text-success" />
+            ) : (
+              <Circle className="h-5 w-5 shrink-0 text-muted-foreground" />
+            )}
             <div className="min-w-0">
               <p className={`text-sm font-semibold ${i < done ? "" : "text-muted-foreground"}`}>{label}</p>
               <p className="text-xs text-muted-foreground">{when}</p>

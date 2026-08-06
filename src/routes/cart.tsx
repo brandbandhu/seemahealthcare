@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { Minus, Plus, ShoppingBag, Trash2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,22 +7,19 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { inr, useStore } from "@/context/StoreContext";
 
-export const Route = createFileRoute("/cart")({
-  head: () => ({
-    meta: [
-      { title: "Your Cart — Seema Healthcare" },
-      { name: "description", content: "Review your medicines, apply coupons, redeem reward points and check delivery before checkout." },
-      { property: "og:title", content: "Your Cart — Seema Healthcare" },
-      { property: "og:description", content: "Transparent pricing with coupons, referral discount and reward points." },
-    ],
-  }),
-  component: CartPage,
-});
-
-function CartPage() {
+export default function CartPage() {
   const {
-    lines, totals, setQty, removeFromCart, applyCoupon, removeCoupon, couponCode,
-    pointsUsed, setPointsUsed, pointsBalance, hospitalCode,
+    lines,
+    totals,
+    setQty,
+    removeFromCart,
+    applyCoupon,
+    removeCoupon,
+    couponCode,
+    pointsUsed,
+    setPointsUsed,
+    pointsBalance,
+    hospitalCode,
   } = useStore();
   const [code, setCode] = useState("");
   const navigate = useNavigate();
@@ -35,8 +32,12 @@ function CartPage() {
           <h1 className="text-xl font-bold">Your cart is empty</h1>
           <p className="text-sm text-muted-foreground">Add products, or upload a prescription and we'll build the order for you.</p>
           <div className="flex flex-wrap justify-center gap-2">
-            <Button asChild><Link to="/products">Shop products</Link></Button>
-            <Button asChild variant="outline"><Link to="/upload-prescription">Upload prescription</Link></Button>
+            <Button asChild>
+              <Link to="/products">Shop products</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link to="/upload-prescription">Upload prescription</Link>
+            </Button>
           </div>
         </div>
       </div>
@@ -55,12 +56,12 @@ function CartPage() {
               <img src={product.image} alt={product.name} loading="lazy" width={800} height={800} className="h-16 w-16 rounded-xl border object-cover sm:h-20 sm:w-20" />
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <Link to="/products/$slug" params={{ slug: product.slug }} className="font-semibold hover:text-primary">
+                  <Link to={`/products/${product.slug}`} className="font-semibold hover:text-primary">
                     {product.name}
                   </Link>
                   {product.rx && <Badge variant="outline" className="text-primary">Rx</Badge>}
                 </div>
-                <p className="text-xs text-muted-foreground">{product.packSize} · {product.brand}</p>
+                <p className="text-xs text-muted-foreground">{product.packSize} - {product.brand}</p>
                 <p className="mt-1 text-sm font-bold">
                   {inr(product.price)} <span className="text-xs font-normal text-muted-foreground line-through">{inr(product.mrp)}</span>
                 </p>
@@ -87,7 +88,9 @@ function CartPage() {
             <li className="flex flex-wrap items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4 text-sm">
               <Upload className="h-5 w-5 text-primary" />
               <p className="min-w-0 flex-1">Your cart contains prescription medicines. A valid prescription is required before dispatch.</p>
-              <Button asChild size="sm" variant="outline"><Link to="/upload-prescription">Upload now</Link></Button>
+              <Button asChild size="sm" variant="outline">
+                <Link to="/upload-prescription">Upload now</Link>
+              </Button>
             </li>
           )}
         </ul>
@@ -119,7 +122,7 @@ function CartPage() {
               <Button variant="outline" onClick={() => setPointsUsed(totals.maxPoints)}>Max</Button>
             </div>
             <p className="text-xs text-muted-foreground">
-              Balance {pointsBalance} points · 1 point = ₹1 · up to 10% of cart value
+              Balance {pointsBalance} points - 1 point = Rs. 1 - up to 10% of cart value
             </p>
           </div>
 
@@ -127,12 +130,12 @@ function CartPage() {
 
           <dl className="space-y-2 text-sm">
             <Row label="MRP total" value={inr(totals.mrpTotal)} />
-            <Row label="Product discount" value={`− ${inr(totals.productDiscount)}`} tone="success" />
-            {totals.couponDiscount > 0 && <Row label="Coupon discount" value={`− ${inr(totals.couponDiscount)}`} tone="success" />}
+            <Row label="Product discount" value={`- ${inr(totals.productDiscount)}`} tone="success" />
+            {totals.couponDiscount > 0 && <Row label="Coupon discount" value={`- ${inr(totals.couponDiscount)}`} tone="success" />}
             {totals.hospitalDiscount > 0 && (
-              <Row label={`Hospital referral (${hospitalCode})`} value={`− ${inr(totals.hospitalDiscount)}`} tone="success" />
+              <Row label={`Hospital referral (${hospitalCode})`} value={`- ${inr(totals.hospitalDiscount)}`} tone="success" />
             )}
-            {totals.pointsDiscount > 0 && <Row label="Reward points" value={`− ${inr(totals.pointsDiscount)}`} tone="success" />}
+            {totals.pointsDiscount > 0 && <Row label="Reward points" value={`- ${inr(totals.pointsDiscount)}`} tone="success" />}
             <Row label="GST (5%)" value={inr(totals.tax)} />
             <Row label="Delivery" value={totals.delivery ? inr(totals.delivery) : "Free"} />
             <Separator className="my-2" />
@@ -145,10 +148,12 @@ function CartPage() {
             </p>
           </dl>
 
-          <Button className="mt-4 w-full" size="lg" onClick={() => navigate({ to: "/checkout" })}>
+          <Button className="mt-4 w-full" size="lg" onClick={() => navigate("/checkout")}>
             Proceed to Checkout
           </Button>
-          <Button asChild variant="ghost" className="mt-1 w-full"><Link to="/products">Continue shopping</Link></Button>
+          <Button asChild variant="ghost" className="mt-1 w-full">
+            <Link to="/products">Continue shopping</Link>
+          </Button>
         </aside>
       </div>
     </div>

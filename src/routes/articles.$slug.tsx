@@ -1,30 +1,15 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { Link, Navigate, useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { articles } from "@/data/catalog";
 
-export const Route = createFileRoute("/articles/$slug")({
-  loader: ({ params }) => {
-    const article = articles.find((a) => a.slug === params.slug);
-    if (!article) throw notFound();
-    return { article };
-  },
-  head: ({ loaderData }) => {
-    if (!loaderData) return { meta: [{ title: "Article unavailable — Seema Healthcare" }, { name: "robots", content: "noindex" }] };
-    const a = loaderData.article;
-    return {
-      meta: [
-        { title: `${a.title} — Seema Healthcare` },
-        { name: "description", content: a.excerpt },
-        { property: "og:title", content: a.title },
-        { property: "og:description", content: a.excerpt },
-      ],
-    };
-  },
-  component: Article,
-});
+export default function ArticlePage() {
+  const { slug } = useParams();
+  const article = slug ? articles.find((a) => a.slug === slug) : undefined;
 
-function Article() {
-  const { article } = Route.useLoaderData();
+  if (!article) {
+    return <Navigate to="/articles" replace />;
+  }
+
   const related = articles.filter((a) => a.slug !== article.slug).slice(0, 3);
 
   return (
@@ -32,7 +17,7 @@ function Article() {
       <Badge variant="secondary">{article.category}</Badge>
       <h1 className="mt-3 text-2xl font-extrabold sm:text-3xl">{article.title}</h1>
       <p className="mt-2 text-xs text-muted-foreground">
-        {article.author} · Medically reviewed by {article.reviewer} · Updated {article.updated} · {article.read} read
+        {article.author} - Medically reviewed by {article.reviewer} - Updated {article.updated} - {article.read} read
       </p>
 
       <div className="mt-6 space-y-4 text-sm leading-relaxed text-muted-foreground">
@@ -61,7 +46,7 @@ function Article() {
       <h2 className="mt-10 text-xl font-bold">Related articles</h2>
       <div className="mt-3 grid gap-3 sm:grid-cols-3">
         {related.map((a) => (
-          <Link key={a.slug} to="/articles/$slug" params={{ slug: a.slug }} className="card-soft p-4 text-sm font-semibold hover:text-primary">
+          <Link key={a.slug} to={`/articles/${a.slug}`} className="card-soft p-4 text-sm font-semibold hover:text-primary">
             {a.title}
           </Link>
         ))}

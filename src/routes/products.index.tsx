@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, useSearchParams } from "react-router-dom";
 import { Filter, Grid2x2, LayoutList, SearchX, SlidersHorizontal } from "lucide-react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -27,23 +27,6 @@ const searchSchema = z.object({
   category: z.string().optional(),
 });
 
-export const Route = createFileRoute("/products/")({
-  validateSearch: searchSchema,
-  head: () => ({
-    meta: [
-      { title: "Shop Medicines & Healthcare Products — Seema Healthcare" },
-      {
-        name: "description",
-        content:
-          "Browse prescription medicines, OTC products, vitamins, devices and personal care with filters for brand, price, discount and health concern.",
-      },
-      { property: "og:title", content: "Shop Medicines & Healthcare Products — Seema Healthcare" },
-      { property: "og:description", content: "Filter by category, brand, price, discount and health concern." },
-    ],
-  }),
-  component: ProductsPage,
-});
-
 const sorts = [
   { value: "popularity", label: "Popularity" },
   { value: "price-asc", label: "Price: low to high" },
@@ -55,10 +38,14 @@ const sorts = [
 
 const PAGE = 12;
 
-function ProductsPage() {
-  const search = Route.useSearch();
-  const [query, setQuery] = useState(search.q ?? "");
-  const [category, setCategory] = useState<string[]>(search.category ? [search.category] : []);
+export default function ProductsPage() {
+  const [searchParams] = useSearchParams();
+  const initial = searchSchema.safeParse({
+    q: searchParams.get("q") ?? undefined,
+    category: searchParams.get("category") ?? undefined,
+  }).data;
+  const [query, setQuery] = useState(initial?.q ?? "");
+  const [category, setCategory] = useState<string[]>(initial?.category ? [initial.category] : []);
   const [brand, setBrand] = useState<string[]>([]);
   const [concern, setConcern] = useState<string[]>([]);
   const [maxPrice, setMaxPrice] = useState(2500);
@@ -91,12 +78,18 @@ function ProductsPage() {
     const disc = (p: (typeof products)[number]) => (p.mrp - p.price) / p.mrp;
     list = [...list].sort((a, b) => {
       switch (sort) {
-        case "price-asc": return a.price - b.price;
-        case "price-desc": return b.price - a.price;
-        case "discount": return disc(b) - disc(a);
-        case "rating": return b.rating - a.rating;
-        case "newest": return Number(b.tags.includes("new")) - Number(a.tags.includes("new"));
-        default: return b.reviews - a.reviews;
+        case "price-asc":
+          return a.price - b.price;
+        case "price-desc":
+          return b.price - a.price;
+        case "discount":
+          return disc(b) - disc(a);
+        case "rating":
+          return b.rating - a.rating;
+        case "newest":
+          return Number(b.tags.includes("new")) - Number(a.tags.includes("new"));
+        default:
+          return b.reviews - a.reviews;
       }
     });
     return list;
@@ -123,7 +116,10 @@ function ProductsPage() {
             id={`cat-${c.slug}`}
             label={c.name}
             checked={category.includes(c.slug)}
-            onChange={() => { toggle(category, setCategory, c.slug); setVisible(PAGE); }}
+            onChange={() => {
+              toggle(category, setCategory, c.slug);
+              setVisible(PAGE);
+            }}
           />
         ))}
       </FilterGroup>
@@ -138,11 +134,11 @@ function ProductsPage() {
         ))}
       </FilterGroup>
       <div>
-        <h3 className="mb-3 text-sm font-bold">Maximum price · {inr(maxPrice)}</h3>
+        <h3 className="mb-3 text-sm font-bold">Maximum price - {inr(maxPrice)}</h3>
         <Slider value={[maxPrice]} min={50} max={2500} step={50} onValueChange={(v) => setMaxPrice(v[0]!)} />
       </div>
       <div>
-        <h3 className="mb-3 text-sm font-bold">Minimum discount · {minDiscount}%</h3>
+        <h3 className="mb-3 text-sm font-bold">Minimum discount - {minDiscount}%</h3>
         <Slider value={[minDiscount]} min={0} max={40} step={5} onValueChange={(v) => setMinDiscount(v[0]!)} />
       </div>
       <FilterGroup title="Availability">
@@ -159,9 +155,15 @@ function ProductsPage() {
     <div className="mx-auto max-w-7xl px-4 py-6">
       <Breadcrumb>
         <BreadcrumbList>
-          <BreadcrumbItem><BreadcrumbLink asChild><Link to="/">Home</Link></BreadcrumbLink></BreadcrumbItem>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link to="/">Home</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
           <BreadcrumbSeparator />
-          <BreadcrumbItem><BreadcrumbPage>Products</BreadcrumbPage></BreadcrumbItem>
+          <BreadcrumbItem>
+            <BreadcrumbPage>Products</BreadcrumbPage>
+          </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
 
@@ -171,7 +173,10 @@ function ProductsPage() {
       <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         <Input
           value={query}
-          onChange={(e) => { setQuery(e.target.value); setVisible(PAGE); }}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setVisible(PAGE);
+          }}
           placeholder="Search by name, composition or brand"
           aria-label="Search products"
           className="h-10 w-full sm:min-w-[220px] sm:flex-1 lg:max-w-sm"
@@ -183,14 +188,22 @@ function ProductsPage() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-[90vw] max-w-sm overflow-y-auto">
-            <SheetHeader><SheetTitle>Filters</SheetTitle></SheetHeader>
+            <SheetHeader>
+              <SheetTitle>Filters</SheetTitle>
+            </SheetHeader>
             <div className="p-4">{filters}</div>
           </SheetContent>
         </Sheet>
         <Select value={sort} onValueChange={setSort}>
-          <SelectTrigger className="w-full sm:min-w-[190px] lg:w-48"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:min-w-[190px] lg:w-48">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
-            {sorts.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
+            {sorts.map((s) => (
+              <SelectItem key={s.value} value={s.value}>
+                {s.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <div className="hidden gap-1 sm:flex lg:ml-auto">
@@ -206,7 +219,9 @@ function ProductsPage() {
       <div className="mt-6 grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
         <aside className="hidden lg:block">
           <div className="card-soft sticky top-32 max-h-[75vh] overflow-y-auto p-5">
-            <h2 className="mb-4 flex items-center gap-2 text-sm font-bold"><Filter className="h-4 w-4" /> Filters</h2>
+            <h2 className="mb-4 flex items-center gap-2 text-sm font-bold">
+              <Filter className="h-4 w-4" /> Filters
+            </h2>
             {filters}
           </div>
         </aside>
@@ -221,7 +236,9 @@ function ProductsPage() {
             </div>
           ) : view === "grid" ? (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {results.slice(0, visible).map((p) => <ProductCard key={p.id} product={p} />)}
+              {results.slice(0, visible).map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
             </div>
           ) : (
             <ul className="space-y-3">
@@ -229,12 +246,18 @@ function ProductsPage() {
                 <li key={p.id} className="card-soft grid grid-cols-1 gap-4 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <Link to="/products/$slug" params={{ slug: p.slug }} className="font-semibold hover:text-primary">
+                      <Link to={`/products/${p.slug}`} className="font-semibold hover:text-primary">
                         {p.name}
                       </Link>
-                      {p.rx && <Badge variant="outline" className="text-primary">Rx</Badge>}
+                      {p.rx && (
+                        <Badge variant="outline" className="text-primary">
+                          Rx
+                        </Badge>
+                      )}
                     </div>
-                    <p className="truncate text-xs text-muted-foreground">{p.composition} · {p.packSize} · {p.brand}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {p.composition} - {p.packSize} - {p.brand}
+                    </p>
                     <p className="mt-1 text-sm font-bold">
                       {inr(p.price)} <span className="text-xs font-normal text-muted-foreground line-through">{inr(p.mrp)}</span>
                     </p>
@@ -273,7 +296,9 @@ function CheckRow({ id, label, checked, onChange }: { id: string; label: string;
   return (
     <div className="flex items-center gap-2">
       <Checkbox id={id} checked={checked} onCheckedChange={onChange} />
-      <Label htmlFor={id} className="text-sm font-normal text-muted-foreground">{label}</Label>
+      <Label htmlFor={id} className="text-sm font-normal text-muted-foreground">
+        {label}
+      </Label>
     </div>
   );
 }

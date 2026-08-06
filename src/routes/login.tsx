@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, BadgeCheck, LockKeyhole, ShieldCheck, UserRound } from "lucide-react";
 import { useMemo, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
@@ -19,20 +19,7 @@ const loginSchema = z.object({
 
 type LoginForm = z.infer<typeof loginSchema>;
 
-export const Route = createFileRoute("/login")({
-  head: () => ({
-    meta: [
-      { title: "Login - Seema Healthcare" },
-      {
-        name: "description",
-        content: "Sign in to your Seema Healthcare customer account using username, phone number or email.",
-      },
-    ],
-  }),
-  component: LoginPage,
-});
-
-function LoginPage() {
+export default function LoginPage() {
   const navigate = useNavigate();
   const { user, login, logout } = useAuth();
   const demo = useMemo(
@@ -64,7 +51,7 @@ function LoginPage() {
       toast.error(result.error);
       return;
     }
-    navigate({ to: "/" });
+    navigate("/");
   };
 
   return (

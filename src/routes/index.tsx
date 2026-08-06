@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   ArrowRight,
   BadgeCheck,
@@ -15,7 +16,6 @@ import {
   Quote,
   Sparkles,
 } from "lucide-react";
-import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,25 +24,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { ProductCard } from "@/components/site/ProductCard";
 import { articles, banners, categories, faqs, hospitals, products, testimonials } from "@/data/catalog";
 import heroImg from "@/assets/hero-pharmacy.jpg";
-
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Seema Healthcare — Online Pharmacy & Prescription Ordering" },
-      {
-        name: "description",
-        content:
-          "Order medicines and healthcare products online, upload your prescription for a pharmacist-reviewed order value, and earn hospital referral rewards.",
-      },
-      { property: "og:title", content: "Seema Healthcare — Trusted Healthcare Delivered to Your Doorstep" },
-      {
-        property: "og:description",
-        content: "Medicines, wellness and care — all in one place. Upload a prescription and get your order value.",
-      },
-    ],
-  }),
-  component: Home,
-});
 
 const quickServices = [
   { icon: Upload, label: "Upload Prescription", to: "/upload-prescription" as const },
@@ -67,7 +48,7 @@ const trust = [
   { icon: Truck, title: "Order tracking", text: "Ten-stage timeline from placement to delivery." },
 ];
 
-function Home() {
+export default function HomePage() {
   const [banner, setBanner] = useState(0);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -82,7 +63,6 @@ function Home() {
 
   return (
     <>
-      {/* Hero */}
       <section className="border-b bg-card">
         <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-10 lg:grid-cols-2 lg:py-16">
           <div>
@@ -134,7 +114,6 @@ function Home() {
         </div>
       </section>
 
-      {/* Rotating banners */}
       <section className="mx-auto max-w-7xl px-4 py-8">
         <div className="card-soft overflow-hidden">
           <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
@@ -161,7 +140,6 @@ function Home() {
         </div>
       </section>
 
-      {/* Quick services */}
       <section className="mx-auto max-w-7xl px-4">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {quickServices.map(({ icon: Icon, label, to }) => (
@@ -179,14 +157,12 @@ function Home() {
         </div>
       </section>
 
-      {/* Categories */}
       <Section title="Shop by category" subtitle="Fourteen curated healthcare departments">
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-7">
           {categories.map((c) => (
             <Link
               key={c.slug}
-              to="/products"
-              search={{ category: c.slug }}
+              to={`/products?category=${c.slug}`}
               className="card-soft p-4 transition-shadow hover:shadow-[var(--shadow-card)]"
             >
               <p className="text-sm font-semibold leading-snug">{c.name}</p>
@@ -202,7 +178,6 @@ function Home() {
       <ProductRow title="Newly added" subtitle="Fresh in our catalogue" items={fresh} />
       <ProductRow title="Hospital referral exclusives" subtitle="Extra benefits for referred customers" items={referral} />
 
-      {/* How it works */}
       <Section title="How prescription ordering works" subtitle="Five clear steps, no surprises">
         <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {steps.map((s, i) => (
@@ -218,14 +193,13 @@ function Home() {
         </ol>
       </Section>
 
-      {/* Referral */}
       <section className="mx-auto max-w-7xl px-4 py-10">
         <div className="card-soft grid gap-6 bg-primary p-6 text-primary-foreground lg:grid-cols-2 lg:p-10">
           <div>
             <h2 className="text-2xl font-extrabold">Referred by an associated hospital?</h2>
             <p className="mt-2 text-sm opacity-90">
               Enter your hospital referral code to unlock a 100-point signup bonus, up to 7% off eligible orders and
-              faster prescription review. Points are worth ₹1 each and redeemable against 10% of any cart.
+              faster prescription review. Points are worth Rs. 1 each and redeemable against 10% of any cart.
             </p>
             <Button asChild variant="secondary" className="mt-5">
               <Link to="/referral">Check Eligibility</Link>
@@ -236,7 +210,7 @@ function Home() {
               <li key={h.code} className="rounded-xl bg-primary-foreground/10 p-3 text-sm">
                 <p className="font-semibold">{h.name}</p>
                 <p className="opacity-80">
-                  Code {h.code} · {h.discount}% off · {h.multiplier}x points
+                  Code {h.code} - {h.discount}% off - {h.multiplier}x points
                 </p>
               </li>
             ))}
@@ -244,7 +218,6 @@ function Home() {
         </div>
       </section>
 
-      {/* Trust */}
       <Section title="Why customers trust us" subtitle="Safety and clarity at every step">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {trust.map((t) => (
@@ -257,28 +230,25 @@ function Home() {
         </div>
       </Section>
 
-      {/* Articles */}
       <Section title="Health articles" subtitle="General information, medically reviewed">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {articles.slice(0, 3).map((a) => (
             <Link
               key={a.slug}
-              to="/articles/$slug"
-              params={{ slug: a.slug }}
+              to={`/articles/${a.slug}`}
               className="card-soft p-5 transition-shadow hover:shadow-[var(--shadow-card)]"
             >
               <Badge variant="secondary">{a.category}</Badge>
               <h3 className="mt-3 text-base font-bold leading-snug">{a.title}</h3>
               <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{a.excerpt}</p>
               <p className="mt-3 text-xs text-muted-foreground">
-                Reviewed by {a.reviewer} · {a.read}
+                Reviewed by {a.reviewer} - {a.read}
               </p>
             </Link>
           ))}
         </div>
       </Section>
 
-      {/* Testimonials */}
       <Section title="What our customers say" subtitle="Sample feedback from the demonstration dataset">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((t) => (
@@ -287,7 +257,7 @@ function Home() {
               <blockquote className="mt-3 text-sm text-muted-foreground">{t.text}</blockquote>
               <figcaption className="mt-4 flex items-center justify-between text-sm">
                 <span className="font-semibold">
-                  {t.name} <span className="font-normal text-muted-foreground">· {t.city}</span>
+                  {t.name} <span className="font-normal text-muted-foreground">- {t.city}</span>
                 </span>
                 <span className="flex items-center gap-0.5 text-accent">
                   {Array.from({ length: t.rating }).map((_, i) => (
@@ -300,7 +270,6 @@ function Home() {
         </div>
       </Section>
 
-      {/* FAQ */}
       <Section title="Frequently asked questions" subtitle="Ordering, prescriptions, rewards and delivery">
         <Accordion type="single" collapsible className="card-soft divide-y px-5">
           {faqs.map((f) => (
@@ -312,7 +281,6 @@ function Home() {
         </Accordion>
       </Section>
 
-      {/* Newsletter */}
       <section className="mx-auto max-w-7xl px-4 pb-12">
         <form
           onSubmit={(e) => {

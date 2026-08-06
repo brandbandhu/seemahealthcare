@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, ShieldCheck, Youtube } from "lucide-react";
 import { categories, supportEmail, supportPhone, supportWhatsApp } from "@/data/catalog";
 
@@ -46,7 +46,7 @@ export function Footer() {
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             {categories.slice(0, 8).map((c) => (
               <li key={c.slug}>
-                <Link to="/products" search={{ category: c.slug }} className="hover:text-primary">
+                <Link to={`/products?category=${c.slug}`} className="hover:text-primary">
                   {c.name}
                 </Link>
               </li>
@@ -115,7 +115,7 @@ export function Footer() {
           <ul className="mt-3 grid gap-2 text-sm text-muted-foreground">
             {policies.map((p) => (
               <li key={p.slug}>
-                <Link to="/policies/$slug" params={{ slug: p.slug }} className="hover:text-primary">
+                <Link to={`/policies/${p.slug}`} className="hover:text-primary">
                   {p.label}
                 </Link>
               </li>

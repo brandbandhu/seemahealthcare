@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, BadgeCheck, Gift, Sparkles, UserRound } from "lucide-react";
 import { type ReactNode } from "react";
 import { useForm } from "react-hook-form";
@@ -55,20 +55,7 @@ const registerSchema = z
 
 type RegisterForm = z.infer<typeof registerSchema>;
 
-export const Route = createFileRoute("/register")({
-  head: () => ({
-    meta: [
-      { title: "Register - Seema Healthcare" },
-      {
-        name: "description",
-        content: "Create a Seema Healthcare account to order medicines, upload prescriptions and track deliveries.",
-      },
-    ],
-  }),
-  component: RegisterPage,
-});
-
-function RegisterPage() {
+export default function RegisterPage() {
   const navigate = useNavigate();
   const { user, register, logout } = useAuth();
 
@@ -110,7 +97,7 @@ function RegisterPage() {
       toast.error(result.error);
       return;
     }
-    navigate({ to: "/" });
+    navigate("/");
   };
 
   return (

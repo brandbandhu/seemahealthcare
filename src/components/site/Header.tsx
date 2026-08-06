@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useState, type FormEvent } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
   Gift,
   Menu,
@@ -46,9 +46,9 @@ export function Header() {
   const { user, logout } = useAuth();
   const { totals, pincode, setPincode } = useStore();
 
-  const submit = (e: React.FormEvent) => {
+  const submit = (e: FormEvent) => {
     e.preventDefault();
-    navigate({ to: "/products", search: { q: query || undefined } });
+    navigate(`/products${query.trim() ? `?q=${encodeURIComponent(query.trim())}` : ""}`);
     setOpen(false);
   };
 
@@ -78,15 +78,16 @@ export function Header() {
             <SheetContent side="left" className="w-72 p-0">
               <nav className="flex flex-col gap-1 p-4 pt-10">
                 {navLinks.map((l) => (
-                  <Link
+                  <NavLink
                     key={l.to}
                     to={l.to}
                     onClick={() => setOpen(false)}
-                    className="rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted"
-                    activeProps={{ className: "bg-muted text-primary" }}
+                    className={({ isActive }) =>
+                      `rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted ${isActive ? "bg-muted text-primary" : ""}`
+                    }
                   >
                     {l.label}
-                  </Link>
+                  </NavLink>
                 ))}
                 <div className="mt-4 grid gap-2 border-t pt-4">
                   {user ? (
@@ -139,7 +140,7 @@ export function Header() {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search medicines, brands, health concerns…"
+            placeholder="Search medicines, brands, health concerns..."
             aria-label="Search products"
             className="h-10 rounded-full bg-muted/60 pl-9"
           />
@@ -206,14 +207,15 @@ export function Header() {
       <nav className="hidden border-t lg:block">
         <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-2 text-sm">
           {navLinks.map((l) => (
-            <Link
+            <NavLink
               key={l.to}
               to={l.to}
-              className="font-medium text-muted-foreground transition-colors hover:text-primary"
-              activeProps={{ className: "text-primary" }}
+              className={({ isActive }) =>
+                `font-medium text-muted-foreground transition-colors hover:text-primary ${isActive ? "text-primary" : ""}`
+              }
             >
               {l.label}
-            </Link>
+            </NavLink>
           ))}
         </div>
       </nav>
