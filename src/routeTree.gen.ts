@@ -14,9 +14,11 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as OffersRouteImport } from './routes/offers'
 import { Route as OrderSuccessRouteImport } from './routes/order-success'
 import { Route as ReferralRouteImport } from './routes/referral'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as TrackOrderRouteImport } from './routes/track-order'
 import { Route as UploadPrescriptionRouteImport } from './routes/upload-prescription'
 import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
@@ -50,6 +52,11 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OffersRoute = OffersRouteImport.update({
   id: '/offers',
   path: '/offers',
@@ -63,6 +70,11 @@ const OrderSuccessRoute = OrderSuccessRouteImport.update({
 const ReferralRoute = ReferralRouteImport.update({
   id: '/referral',
   path: '/referral',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrackOrderRoute = TrackOrderRouteImport.update({
@@ -107,9 +119,11 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/login': typeof LoginRoute
   '/offers': typeof OffersRoute
   '/order-success': typeof OrderSuccessRoute
   '/referral': typeof ReferralRoute
+  '/register': typeof RegisterRoute
   '/track-order': typeof TrackOrderRoute
   '/upload-prescription': typeof UploadPrescriptionRoute
   '/articles/$slug': typeof ArticlesSlugRoute
@@ -124,9 +138,11 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/login': typeof LoginRoute
   '/offers': typeof OffersRoute
   '/order-success': typeof OrderSuccessRoute
   '/referral': typeof ReferralRoute
+  '/register': typeof RegisterRoute
   '/track-order': typeof TrackOrderRoute
   '/upload-prescription': typeof UploadPrescriptionRoute
   '/articles/$slug': typeof ArticlesSlugRoute
@@ -142,9 +158,11 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/login': typeof LoginRoute
   '/offers': typeof OffersRoute
   '/order-success': typeof OrderSuccessRoute
   '/referral': typeof ReferralRoute
+  '/register': typeof RegisterRoute
   '/track-order': typeof TrackOrderRoute
   '/upload-prescription': typeof UploadPrescriptionRoute
   '/articles/$slug': typeof ArticlesSlugRoute
@@ -161,9 +179,11 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/contact'
+    | '/login'
     | '/offers'
     | '/order-success'
     | '/referral'
+    | '/register'
     | '/track-order'
     | '/upload-prescription'
     | '/articles/$slug'
@@ -178,9 +198,11 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/contact'
+    | '/login'
     | '/offers'
     | '/order-success'
     | '/referral'
+    | '/register'
     | '/track-order'
     | '/upload-prescription'
     | '/articles/$slug'
@@ -195,9 +217,11 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/contact'
+    | '/login'
     | '/offers'
     | '/order-success'
     | '/referral'
+    | '/register'
     | '/track-order'
     | '/upload-prescription'
     | '/articles/$slug'
@@ -213,9 +237,11 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
+  LoginRoute: typeof LoginRoute
   OffersRoute: typeof OffersRoute
   OrderSuccessRoute: typeof OrderSuccessRoute
   ReferralRoute: typeof ReferralRoute
+  RegisterRoute: typeof RegisterRoute
   TrackOrderRoute: typeof TrackOrderRoute
   UploadPrescriptionRoute: typeof UploadPrescriptionRoute
   ArticlesSlugRoute: typeof ArticlesSlugRoute
@@ -262,6 +288,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/offers': {
       id: '/offers'
       path: '/offers'
@@ -281,6 +314,13 @@ declare module '@tanstack/react-router' {
       path: '/referral'
       fullPath: '/referral'
       preLoaderRoute: typeof ReferralRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/track-order': {
@@ -341,9 +381,11 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
+  LoginRoute: LoginRoute,
   OffersRoute: OffersRoute,
   OrderSuccessRoute: OrderSuccessRoute,
   ReferralRoute: ReferralRoute,
+  RegisterRoute: RegisterRoute,
   TrackOrderRoute: TrackOrderRoute,
   UploadPrescriptionRoute: UploadPrescriptionRoute,
   ArticlesSlugRoute: ArticlesSlugRoute,

@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/context/AuthContext";
 import { useStore } from "@/context/StoreContext";
 import { supportPhone } from "@/data/catalog";
 
@@ -42,6 +43,7 @@ export function Header() {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const { totals, pincode, setPincode } = useStore();
 
   const submit = (e: React.FormEvent) => {
@@ -86,6 +88,37 @@ export function Header() {
                     {l.label}
                   </Link>
                 ))}
+                <div className="mt-4 grid gap-2 border-t pt-4">
+                  {user ? (
+                    <>
+                      <div className="rounded-lg bg-muted px-3 py-2 text-sm">
+                        Signed in as <span className="font-semibold">{user.fullName}</span>
+                      </div>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setOpen(false);
+                          logout();
+                        }}
+                      >
+                        Logout
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button asChild>
+                        <Link to="/login" onClick={() => setOpen(false)}>
+                          Login
+                        </Link>
+                      </Button>
+                      <Button asChild variant="outline">
+                        <Link to="/register" onClick={() => setOpen(false)}>
+                          Register
+                        </Link>
+                      </Button>
+                    </>
+                  )}
+                </div>
               </nav>
             </SheetContent>
           </Sheet>
@@ -113,6 +146,25 @@ export function Header() {
         </form>
 
         <div className="flex flex-wrap items-center justify-end gap-1 sm:flex-nowrap">
+          {!user ? (
+            <>
+              <Button asChild variant="ghost" size="sm" className="hidden md:inline-flex">
+                <Link to="/login">Login</Link>
+              </Button>
+              <Button asChild size="sm" className="hidden md:inline-flex">
+                <Link to="/register">Register</Link>
+              </Button>
+            </>
+          ) : (
+            <>
+              <span className="hidden rounded-full bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground md:inline-flex">
+                {user.fullName.split(" ")[0]}
+              </span>
+              <Button variant="ghost" size="sm" className="hidden md:inline-flex" onClick={logout}>
+                Logout
+              </Button>
+            </>
+          )}
           <button
             type="button"
             onClick={() => {
@@ -134,7 +186,7 @@ export function Header() {
             </Link>
           </Button>
           <Button asChild variant="ghost" size="icon" aria-label="Account">
-            <Link to="/contact">
+            <Link to="/login">
               <User className="h-5 w-5" />
             </Link>
           </Button>

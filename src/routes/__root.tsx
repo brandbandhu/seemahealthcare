@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { MobileNav } from "@/components/site/MobileNav";
+import { AuthProvider } from "@/context/AuthContext";
 import { StoreProvider } from "@/context/StoreContext";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -124,17 +125,19 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <StoreProvider>
-        <div className="flex min-h-screen flex-col">
-          <Header />
-          <main className="flex-1 pb-24 lg:pb-0">
-            <Outlet />
-          </main>
-          <Footer />
-          <MobileNav />
-        </div>
-        <Toaster position="top-center" richColors />
-      </StoreProvider>
+      <AuthProvider>
+        <StoreProvider>
+          <div className="flex min-h-screen flex-col">
+            <Header />
+            <main className="flex-1 pb-24 lg:pb-0">
+              <Outlet />
+            </main>
+            <Footer />
+            <MobileNav />
+          </div>
+          <Toaster position="top-center" richColors />
+        </StoreProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
